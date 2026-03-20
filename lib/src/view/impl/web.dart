@@ -359,22 +359,12 @@ class _WebViewXState extends State<WebViewX> {
 
     switch (model.sourceType) {
       case SourceType.html:
-        iframe.srcdoc = HtmlUtils.preprocessSource(
-          source,
-          jsContent: widget.jsContent,
-          windowDisambiguator: iframeViewType,
-          forWeb: true,
-        );
+        iframe.srcdoc = _preprocessSourceForWeb(source);
         break;
       case SourceType.url:
       case SourceType.urlBypass:
         if (source == 'about:blank') {
-          iframe.srcdoc = HtmlUtils.preprocessSource(
-            '<br>',
-            jsContent: widget.jsContent,
-            windowDisambiguator: iframeViewType,
-            forWeb: true,
-          );
+          iframe.srcdoc = _preprocessSourceForWeb('<br>');
           break;
         }
 
@@ -528,12 +518,7 @@ class _WebViewXState extends State<WebViewX> {
       pageSource,
     );
 
-    iframe.srcdoc = HtmlUtils.preprocessSource(
-      replacedPageSource,
-      jsContent: widget.jsContent,
-      windowDisambiguator: iframeViewType,
-      forWeb: true,
-    );
+    iframe.srcdoc = _preprocessSourceForWeb(replacedPageSource);
   }
 
   void _debugLog(String text) {
@@ -550,5 +535,16 @@ class _WebViewXState extends State<WebViewX> {
       _handleIgnoreGesturesChange,
     );
     super.dispose();
+  }
+
+  dynamic _preprocessSourceForWeb(String source) {
+    final webSrc = HtmlUtils.preprocessSource(
+      source,
+      jsContent: widget.jsContent,
+      windowDisambiguator: iframeViewType,
+      forWeb: true,
+    );
+
+    return webSrc is JSAny ? webSrc as JSAny : webSrc.toJS;
   }
 }

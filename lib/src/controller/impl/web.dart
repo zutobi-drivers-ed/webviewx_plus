@@ -128,7 +128,8 @@ class WebViewXController extends ChangeNotifier
     String name,
     List<dynamic> params,
   ) {
-    final result = connector.callMethod(name.toJS, params.toJSBox);
+    final result = connector.callMethod(name.toJS,
+        (params is js.JSAny) ? (params as js.JSAny) : params.toJSBox);
     return Future<dynamic>.value(result);
   }
 
@@ -146,7 +147,9 @@ class WebViewXController extends ChangeNotifier
   }) {
     final result = (inGlobalContext ? js.globalContext : connector).callMethod(
       'eval'.toJS,
-      [rawJavascript].toJSBox,
+      ([rawJavascript] is js.JSAny)
+          ? ([rawJavascript] as js.JSAny)
+          : [rawJavascript].toJSBox,
     );
     return Future<dynamic>.value(result);
   }
